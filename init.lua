@@ -171,7 +171,7 @@ local function displayKoord(koord)
 	
 	local function colorize(color, str)
 		color = color:gsub("ü", "ue")
-		local colorCodes = {blau = 32, gelb = 33, gruen = 32, orange = 33, rosa = 35, rot = 31, tuerkis = 36}
+		local colorCodes = {blau = 34, gelb = 33, gruen = 32, orange = 33, rosa = 35, rot = 31, tuerkis = 36}
 		return "\27[".. colorCodes[color] .."m".. str .."\27[0m"
 	end
 	
@@ -278,5 +278,5 @@ end
 sortKoord()
 
 displayKoord()
-print(berechnePunkte())
+print("Bonuspunkte: ".. berechnePunkte())
 
