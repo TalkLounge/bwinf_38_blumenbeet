@@ -3,7 +3,9 @@ Lösung für die Aufgabe Blumenbeet in der Programmiersprache Lua vom Bundeswett
 Zur [Aufgabe](https://bwinf.de/fileadmin/BwInf/38/BwInf38-Aufgabenblatt.pdf "Zur Blumenbeet Aufgabe")
 
 ## Screenshots
-![Screenshot der Ausgabe](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/ausgabe.png "Screenshot der Ausgabe")
+![Screenshot der Ausgabe](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/output.png "Screenshot der Ausgabe")
+
+![Screenshot zur Erklärung](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/explanation.png "Screenshot zur Erklärung")
 
 ## License
 GNU GPL v2.0 | See [License.txt](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/License.txt "Link to License.txt")
