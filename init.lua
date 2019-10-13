@@ -253,7 +253,6 @@ local function berechnePunkte(koord)
 		punkte = berechne(x + 1, y, eigeneFarbe, punkte)
 		punkte = berechne(x + 1, y + 1, eigeneFarbe, punkte)
 		punkte = berechne(x, y + 1, eigeneFarbe, punkte)
-		punkte = berechne(x - 1, y + 1, eigeneFarbe, punkte)
 	end
 	return punkte
 end
