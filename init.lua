@@ -4,7 +4,11 @@ local meine_farben = {}
 local function table_copy(tbl)
 	local newtbl = {}
 	for key, value in pairs(tbl) do
-		newtbl[key] = value
+		if type(value) == "table" then
+			newtbl[key] = table_copy(value)
+		else
+			newtbl[key] = value
+		end
 	end
 	return newtbl
 end
@@ -28,21 +32,19 @@ end
 
 -- Farben einlesen
 while true do
-	print("Bitte Farben (verfügbare: ".. table.concat(getVerfuegbareFarben(), ",") ..") eingeben oder c für cancel: ")
+	print("Bitte verfügbare Farben eingeben (Auf Lager: ".. table.concat(getVerfuegbareFarben(), ",") ..") ODER C zum Bestätigen: ")
 	local farbe = io.read()
 	if farbe:lower() == "c" then
+		print("")
 		break
 	elseif table_search(max_farben, farbe) == -1 then
-		print("Bei der Farbe vertippt?")
+		print("Diese Farbe ist leider nicht auf Lager")
 	elseif table_search(meine_farben, farbe) ~= -1 then
-		print("Farbe existiert bereits")
+		print("Diese Farbe haben Sie bereits ausgewählt")
 	else
 		table.insert(meine_farben, farbe)
 	end
 end
-
--- Debug Ausgabe
-print(table.concat(meine_farben, ","))
 
 local function string_split(str, sep)
 	if sep == nil then
@@ -59,19 +61,20 @@ local meine_paare = {}
 
 -- Paare einlesen
 while true do
-	print("Bitte gute Paare angeben (Bsp: rot grün 3) oder c für cancel: ")
+	print("Bitte Paar angeben, die Ihnen nebeneinander besonders gut gefallen (z.B. ".. meine_farben[1] .." ".. (meine_farben[2] or meine_farben[1]) .." 3) ODER C zum Bestätigen: ")
 	local paar = io.read()
 	paar = string_split(paar, " ")
 	if paar[1]:lower() == "c" then
+		print("")
 		break
 	elseif #paar ~= 3 then
-		print("Falsche Eingabe?")
+		print("Falsche Eingabe!")
 	elseif table_search(meine_farben, paar[1]) == -1 or table_search(meine_farben, paar[2]) == -1 then
-		print("Farben stehen nicht zur Verfügung")
+		print("Diese Farbe haben Sie beim letzten Vorgang nicht ausgewählt")
 	elseif paar[1] == paar[2] then
-		print("Müssen unterschiedliche Farben sein")
+		print("Ein Paar muss unterschiedliche Farben haben")
 	elseif not tonumber(paar[3]) or (tonumber(paar[3]) ~= 1 and tonumber(paar[3]) ~= 2 and tonumber(paar[3]) ~= 3) then
-		print("Zahl muss 1, 2 oder 3 sein")
+		print("Der Bonuspunkt muss eine gerade Zahl zwischen 1 bis 3 sein")
 	else
 		local updated = false
 		for key, value in pairs(meine_paare) do
@@ -84,11 +87,6 @@ while true do
 			table.insert(meine_paare, {farbe1 = paar[1], farbe2 = paar[2], punkt = tonumber(paar[3])})
 		end
 	end
-end
-
--- Debug Ausgabe
-for key, value in pairs(meine_paare) do
-	print(value.farbe1, value.farbe2, value.punkt)
 end
 
 local anzahlFarben = {}
@@ -108,20 +106,30 @@ while anzahlFarbenBisher < 9 do
 	end
 end
 
--- Debug Ausgabe
-for key, value in pairs(anzahlFarben) do
-	print(key ..": ".. value)
-end
+local gKoord = {}
 
-local koord = {{}, {}, {}}
-
-local function getKoord(x, y)
+local function getKoord(x, y, koord)
+	if x < 1 or x > 3 or y < 1 or y > 3 then
+		return
+	end
+	if not koord then
+		koord = gKoord
+	end
 	if koord[x] then
 		return koord[x][y]
 	end
 end
 
-local function setKoord(x, y, str)
+local function setKoord(x, y, str, koord)
+	if x < 1 or x > 3 or y < 1 or y > 3 then
+		return
+	end
+	if not koord then
+		koord = gKoord
+	end
+	if not koord[x] then
+		koord[x] = {}
+	end
 	koord[x][y] = str
 end
 
@@ -139,31 +147,69 @@ for key, value in pairs(anzahlFarben) do
 	end
 end
 
-local function realLength(str)
-	if str:find("ü") then
-		return str:len() - 1
-	else
-		return str:len()
+local function displayKoord(koord)
+	--[[
+       ______________
+      /            \
+     /    türkis    \
+    /                \
+   /   türkis türkis  \
+  /                    \
+ | türkis türkis türkis |
+  \                    /
+   \   türkis türkis  /
+    \                /
+     \    türkis    /
+      \            /
+       ------------
+	]]
+	
+	local function stretch(str)
+		local missing = 6 - (str:find("ü") and str:len() - 1 or str:len())
+		return string.rep(" ", math.ceil(missing / 2)) .. str .. string.rep(" ", math.floor(missing / 2))
 	end
-end
-
-local function stretch(str)
-	return str .. string.rep(" ", 6 - realLength(str))
-end
-
-local function displayKoord()
-	local formatted = string.format("%%%ds | %%%ds | %%%ds", 5, 5, 5)
+	
+	local function colorize(color, str)
+		color = color:gsub("ü", "ue")
+		local colorCodes = {blau = 32, gelb = 33, gruen = 32, orange = 33, rosa = 35, rot = 31, tuerkis = 36}
+		return "\27[".. colorCodes[color] .."m".. str .."\27[0m"
+	end
+	
+	local function formatString(str)
+		return colorize(str, stretch(str))
+	end
+	
+	local str = "      ____________"
+	str = str .."\n".."     /            \\"
+	str = str .."\n".."    /    ".. formatString(getKoord(3, 1, koord)) .."    \\"
+	str = str .."\n".."   /                \\"
+	str = str .."\n".."  /   ".. formatString(getKoord(2, 1, koord)) .." ".. formatString(getKoord(3, 2, koord)) .."  \\"
+	str = str .."\n".." /                    \\"
+	str = str .."\n".."| ".. formatString(getKoord(1, 1, koord)) .." ".. formatString(getKoord(2, 2, koord)) .." ".. formatString(getKoord(3, 3, koord)) .." |"
+	str = str .."\n".." \\                    /"
+	str = str .."\n".."  \\   ".. formatString(getKoord(1, 2, koord)) .." ".. formatString(getKoord(2, 3, koord)) .."  /"
+	str = str .."\n".."   \\                /"
+	str = str .."\n".."    \\    ".. formatString(getKoord(1, 3, koord)) .."    /"
+	str = str .."\n".."     \\            /"
+	str = str .."\n".."      ------------"
+	
 	print("")
+	
+	print(str)
+	
+	-- Old output: Array like
+	--[[
+	local formatted = string.format("%%%ds | %%%ds | %%%ds", 5, 5, 5)
 	for y = 1, 3 do
-		print(string.format(formatted, stretch(getKoord(1, y)), stretch(getKoord(2, y)), stretch(getKoord(3, y))))
+		print(string.format(formatted, stretch(getKoord(1, y, koord)), stretch(getKoord(2, y, koord)), stretch(getKoord(3, y, koord))))
 		if y ~= 3 then
 			print("------------------------")
 		end
 	end
+	]]
+	
 	print("")
 end
-
-displayKoord()
 
 local function koordIterator()
 	local x
@@ -187,10 +233,10 @@ local function koordIterator()
 	end
 end
 
-local function berechnePunkte()
+local function berechnePunkte(koord)
 	local function berechne(x, y, eigeneFarbe, punkte)
 		for key, value in pairs(meine_paare) do
-			local nachbarFarbe = getKoord(x, y)
+			local nachbarFarbe = getKoord(x, y, koord)
 			if not nachbarFarbe then
 				break
 			end
@@ -203,13 +249,34 @@ local function berechnePunkte()
 	
 	local punkte = 0
 	for x, y in koordIterator() do
-		local eigeneFarbe = getKoord(x, y)
+		local eigeneFarbe = getKoord(x, y, koord)
 		punkte = berechne(x + 1, y, eigeneFarbe, punkte)
 		punkte = berechne(x + 1, y + 1, eigeneFarbe, punkte)
 		punkte = berechne(x, y + 1, eigeneFarbe, punkte)
 		punkte = berechne(x - 1, y + 1, eigeneFarbe, punkte)
 	end
-	print("Punkte: ".. punkte)
+	return punkte
 end
 
-berechnePunkte()
+local function sortKoord()
+	for x, y in koordIterator() do
+		local eigeneFarbe = getKoord(x, y)
+		for x2, y2 in koordIterator() do
+			local copiedKoord = table_copy(gKoord)
+			local tauschFarbe = getKoord(x2, y2)
+			setKoord(x, y, tauschFarbe, copiedKoord)
+			setKoord(x2, y2, eigeneFarbe, copiedKoord)
+			if berechnePunkte(copiedKoord) > berechnePunkte() then
+				gKoord = copiedKoord
+				return sortKoord()
+			end
+		end
+	end
+end
+
+
+sortKoord()
+
+displayKoord()
+print(berechnePunkte())
+
