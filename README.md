@@ -7,6 +7,8 @@ Zur [Aufgabe](https://bwinf.de/fileadmin/BwInf/38/BwInf38-Aufgabenblatt.pdf "Zur
 ![Screenshot der Ausgabe](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/output.png "Screenshot der Ausgabe")
 ### Erklärung
 ![Screenshot zur Erklärung](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/explanation.png "Screenshot zur Erklärung")
+### Fehleingaben
+![Screenshot mit Fehleingaben](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/misentry.png "Screenshot mit Fehleingaben")
 
 ## License
 GNU GPL v2.0 | See [License.txt](https://github.com/TalkLounge/bwinf_38_blumenbeet/blob/master/License.txt "Link to License.txt")
