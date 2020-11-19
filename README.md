@@ -1,6 +1,6 @@
 # BWINF 38 Blumenbeet
 Lösung für die Aufgabe Blumenbeet in der Programmiersprache Lua vom Bundeswettbewerb Informatik 38 2019 Runde 1  
-Zur [Aufgabe](https://bwinf.de/fileadmin/BwInf/38/BwInf38-Aufgabenblatt.pdf "Zur Blumenbeet Aufgabe")
+Zur [Aufgabe](https://bwinf.de/fileadmin/bundeswettbewerb/38/BwInf38-Aufgabenblatt.pdf "Zur Blumenbeet Aufgabe")
 
 ## Screenshots
 ### Ausgabe
